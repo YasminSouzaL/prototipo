@@ -1,11 +1,23 @@
 import pytesseract
 from PIL import Image
 
+'''Usando o pytesseract para ler o texto da imagem, e o PIL para abrir a imagem e transformar em texto e salvar em um arquivo de texto, crier um metodo que recebe o caminho da imagem e retorna o texto da imagem em um arquivo de texto corrigido '''
 
-imagem_prova = Image.open('prova.jpg')
+def ocr(path):
+    img = Image.open(path)
+    text = pytesseract.image_to_string(img, lang='por')
+    return text
 
-# Realizar a extração de texto com Tesseract OCR
-texto_extraido = pytesseract.image_to_string(imagem_prova)
+def save_text(text):
+    with open('text.txt', 'w') as f:
+        f.write(text)
+    return 'text.txt'
 
-# Imprimir o texto extraído
-print(texto_extraido)
+def main():
+    path = 'img.png'
+    text = ocr(path)
+    save_text(text)
+    print('Texto salvo em text.txt')
+
+if __name__ == '__main__':
+    main()
