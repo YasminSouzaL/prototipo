@@ -1,0 +1,19 @@
+# Define the correct answers
+correct_answers = ['A', 'C', 'B', 'D', 'A']
+
+# Example of student answers
+student_answers = ['A', 'B', 'B', 'D', 'A']
+
+# Function to correct the test
+def correct_test(correct_answers, student_answers):
+    score = 0
+    for correct, student in zip(correct_answers, student_answers):
+        if correct == student:
+            score += 1
+    return score
+
+# Correct the test
+score = correct_test(correct_answers, student_answers)
+
+# Print the score
+print(f"The student's score is {score} out of {len(correct_answers)}")
