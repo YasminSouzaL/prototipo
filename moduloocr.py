@@ -31,7 +31,6 @@ while True:
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     imgBlur = cv2.GaussianBlur(imgGray, (5,5), 1)
     imgCanny = cv2.Canny(imgBlur, 10, 50)
-    
     #Find Contours
     countours, hierarchy = cv2.findContours(imgCanny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(imgContours, countours, -1, (0,255,0), 10)
@@ -131,3 +130,7 @@ while True:
     cv2.imshow("ImageStack", imgStack)
     #cv2.imshow("Final", imgFinal)
     cv2.waitKey(0)
+    if cv2.waitKey(1) & 0xFF == ord('s'):
+        cv2.imwrite("FinalPaper.jpg", imgFinal)
+        cv2.waitKey(300)
+        
