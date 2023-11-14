@@ -1,7 +1,7 @@
 # Reconhecimento Óptico de Marcas (OMR) Avaliação Automática de Múltipla Escolha - OpenCV com Python
 import cv2
 import numpy as np
-import utils  # Importe corrigido
+import utis  # Importe corrigido
 import form.js  # Importe removido, pois não está sendo utilizado
 ###################################
 # import form.js as form  # Importe removido, pois não está sendo utilizado
