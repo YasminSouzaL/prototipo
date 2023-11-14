@@ -2,10 +2,10 @@
 import cv2
 import numpy as np
 import utis  # Importe corrigido
-import form.js  # Importe removido, pois não está sendo utilizado
+
 ###################################
 # import form.js as form  # Importe removido, pois não está sendo utilizado
-caminho = "1.jpg"
+caminho = "cap1.png"
 larguraImg = 700
 alturaImg = 700
 perguntas = 5

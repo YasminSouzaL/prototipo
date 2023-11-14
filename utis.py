@@ -48,8 +48,9 @@ def stackImages(imgArray, escala, rotulos=[]):
             for c in range(0, colunas):
                 cv2.rectangle(ver, (c*larguraCadaImagem, alturaCadaImagem*d),
                               (c*larguraCadaImagem+len(rotulos[d])*13+27, 30+alturaCadaImagem*d), (255, 255, 255), cv2.FILLED)
-                cv2.putText(ver, rotulos[d], (larguraCadaImagem*c+10, alturaCadaImagem*d+20),
-                            cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 0, 255), 2) 
+                cv2.putText(ver, str(rotulos[d]), (larguraCadaImagem*c+10, alturaCadaImagem*d+20),
+                cv2.FONT_HERSHEY_COMPLEX, 0.7, (255, 0, 255), 2)
+
     return ver
 
 def rectContour(contornos):
