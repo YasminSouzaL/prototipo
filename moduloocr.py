@@ -1,136 +1,136 @@
-#optical mark recognition (omr) MCQ Automated Grading - OpenCV with Python
+# Reconhecimento Óptico de Marcas (OMR) Avaliação Automática de Múltipla Escolha - OpenCV com Python
 import cv2
 import numpy as np
-import utis
+import utils  # Importe corrigido
+import form.js  # Importe removido, pois não está sendo utilizado
 ###################################
-path = 'test.jpg'
-widhtImg = 700
-heightImg = 700
-questions = 5
-choices = 5
-ans = [1, 2, 0, 1, 4]
-score = 0
+# import form.js as form  # Importe removido, pois não está sendo utilizado
+caminho = "1.jpg"
+larguraImg = 700
+alturaImg = 700
+perguntas = 5
+opcoes = 5
+respostas_corretas = [1, 2, 0, 1, 4]
+pontuacao = 0
 webCamFeed = True
-camereNo = 1
+numero_camera = 1
 ###################################
-cap = cv2.VideoCapture(camereNo)
+cap = cv2.VideoCapture(numero_camera)
 cap.set(10, 160)
 while True:
-    if webCamFeed:  
-        success, img = cap.read()
+    if webCamFeed:
+        sucesso, img = cap.read()
     else:
-        img = cv2.imread(path)
+        img = cv2.imread(caminho)
 
-    img = cv2.imread(path)
+    img = cv2.imread(caminho)
 
-    #Preprocessing
-    img = cv2.resize(img, (widhtImg, heightImg))
-    imgContours = img.copy()
+    # Pré-processamento
+    img = cv2.resize(img, (larguraImg, alturaImg))
+    imgContornos = img.copy()
     imgFinal = img.copy()
-    imgBiggestContours = img.copy()
-    imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    imgBlur = cv2.GaussianBlur(imgGray, (5,5), 1)
-    imgCanny = cv2.Canny(imgBlur, 10, 50)
-    #Find Contours
-    countours, hierarchy = cv2.findContours(imgCanny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    cv2.drawContours(imgContours, countours, -1, (0,255,0), 10)
+    imgMaioresContornos = img.copy()
+    imgCinza = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    imgDesfoque = cv2.GaussianBlur(imgCinza, (5, 5), 1)
+    imgCanny = cv2.Canny(imgDesfoque, 10, 50)
+    # Encontrar Contornos
+    contornos, hierarquia = cv2.findContours(imgCanny, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    cv2.drawContours(imgContornos, contornos, -1, (0, 255, 0), 10)
 
-    #Find Rectangle
-    rectCon = utis.rectContour(countours)
-    biggestContour = utis.getCornerPoints(rectCon[0])
-    gradePoints = utis.getCornerPoints(rectCon[1])
+    # Encontrar Retângulo
+    retanguloContorno = utils.rectContour(contornos)
+    maiorContorno = utils.getCornerPoints(retanguloContorno[0])
+    pontosNota = utils.getCornerPoints(retanguloContorno[1])
 
-    if biggestContour.size != 0 and gradePoints.size != 0:
-        cv2.drawContours(imgBiggestContours, biggestContour, -1, (0,255,0), 20)
-        cv2.drawContours(imgBiggestContours, gradePoints, -1, (255,0,0), 20)
-        biggestContour=utis.reorder(biggestContour)
-        gradePoints=utis.reorder(gradePoints)
+    if maiorContorno.size != 0 and pontosNota.size != 0:
+        cv2.drawContours(imgMaioresContornos, maiorContorno, -1, (0, 255, 0), 20)
+        cv2.drawContours(imgMaioresContornos, pontosNota, -1, (255, 0, 0), 20)
+        maiorContorno = utils.reorder(maiorContorno)
+        pontosNota = utils.reorder(pontosNota)
 
-        pt1 = np.float32(biggestContour)
-        pt2 = np.float32([[0,0],[widhtImg,0],[0,heightImg],[widhtImg,heightImg]])
-        matrix = cv2.getPerspectiveTransform(pt1, pt2)
-        imgWarpColored = cv2.warpPerspective(img, matrix, (widhtImg, heightImg))
+        pt1 = np.float32(maiorContorno)
+        pt2 = np.float32([[0, 0], [larguraImg, 0], [0, alturaImg], [larguraImg, alturaImg]])
+        matriz = cv2.getPerspectiveTransform(pt1, pt2)
+        imgWarpColorida = cv2.warpPerspective(img, matriz, (larguraImg, alturaImg))
 
-        ptG1 = np.float32(gradePoints)
-        ptG2 = np.float32([[0,0],[325,0],[0,150],[325,150]])
-        matrixG = cv2.getPerspectiveTransform(ptG1, ptG2)
-        imgGradeDisplay = cv2.warpPerspective(img, matrixG, (325,150))
-        #cv2.imshow("Grade", imgGradeDisplay)
+        ptG1 = np.float32(pontosNota)
+        ptG2 = np.float32([[0, 0], [325, 0], [0, 150], [325, 150]])
+        matrizG = cv2.getPerspectiveTransform(ptG1, ptG2)
+        imgGradeDisplay = cv2.warpPerspective(img, matrizG, (325, 150))
+        # cv2.imshow("Grade", imgGradeDisplay)
 
-        #Apply Threshold
-        imgWarpGray = cv2.cvtColor(imgWarpColored, cv2.COLOR_BGR2GRAY)
-        imgThresh = cv2.threshold(imgWarpGray, 170, 255, cv2.THRESH_BINARY_INV)[1]
+        # Aplicar Limiar
+        imgWarpCinza = cv2.cvtColor(imgWarpColorida, cv2.COLOR_BGR2GRAY)
+        imgLimiar = cv2.threshold(imgWarpCinza, 170, 255, cv2.THRESH_BINARY_INV)[1]
 
-        boxes = utis.splitBoxes(imgThresh)
-        #cv2.imshow("Test", boxes[0])
+        caixas = utils.splitBoxes(imgLimiar)
+        # cv2.imshow("Test", caixas[0])
 
-        #Find the number of each box
+        # Encontrar o número de cada caixa
         countR = 0
         countC = 0
-        myPixelVal = np.zeros((questions, choices))
-        
-        for image in boxes:
-            totalPixels = cv2.countNonZero(image)
-            myPixelVal[countR][countC] = totalPixels
+        meuValorPixel = np.zeros((perguntas, opcoes))
+
+        for imagem in caixas:
+            totalPixels = cv2.countNonZero(imagem)
+            meuValorPixel[countR][countC] = totalPixels
             countC += 1
-            if (countC == choices):countR += 1; countC = 0
+            if (countC == opcoes): countR += 1; countC = 0
 
-        #print(myPixelVal)
-        #Find index
-        myIndex = []
-        for x in range (0, questions):
-            arr = myPixelVal[x]
-            #print('arr',arr)
-            myIndexVal = np.where(arr == np.amax(arr))
-            #print('myIndexVal',myIndexVal[0])
-            myIndex.append(myIndexVal[0][0])
-        #print(myIndex)
+        # print(meuValorPixel)
+        # Encontrar índice
+        meuIndice = []
+        for x in range(0, perguntas):
+            arr = meuValorPixel[x]
+            # print('arr',arr)
+            meuIndiceVal = np.where(arr == np.amax(arr))
+            # print('meuIndiceVal',meuIndiceVal[0])
+            meuIndice.append(meuIndiceVal[0][0])
+        # print(meuIndice)
 
-        #GRADING
-        grading = []
-        for x in range(0, questions):
-            if ans[x] == myIndex[x]:
-                grading.append(1)
+        # Avaliação
+        avaliacao = []
+        for x in range(0, perguntas):
+            if respostas_corretas[x] == meuIndice[x]:
+                avaliacao.append(1)
             else:
-                grading.append(0)
-        #print(grading)
-        score = (sum(grading)/questions)*100
-        #print(score)
+                avaliacao.append(0)
+        # print(avaliacao)
+        pontuacao = (sum(avaliacao) / perguntas) * 100
+        # print(pontuacao)
 
-        #Display Answers
-        imgResult = imgWarpColored.copy()
-        imgResult = utis.showAnswers(imgResult, myIndex, grading, ans, questions, choices)
-        imgRawDrawings = np.zeros_like(imgWarpColored)
-        imgRawDrawings = utis.showAnswers(imgRawDrawings, myIndex, grading, ans, questions, choices)
+        # Mostrar Respostas
+        imgResultado = imgWarpColorida.copy()
+        imgResultado = utils.showAnswers(imgResultado, meuIndice, avaliacao, respostas_corretas, perguntas, opcoes)
+        imgDesenhosCrus = np.zeros_like(imgWarpColorida)
+        imgDesenhosCrus = utils.showAnswers(imgDesenhosCrus, meuIndice, avaliacao, respostas_corretas, perguntas, opcoes)
         invMatrix = cv2.getPerspectiveTransform(pt2, pt1)
-        imgInvWarp = cv2.warpPerspective(imgRawDrawings, invMatrix, (widhtImg, heightImg))
+        imgInvWarp = cv2.warpPerspective(imgDesenhosCrus, invMatrix, (larguraImg, alturaImg))
 
-        imgRawGrade = np.zeros_like(imgGradeDisplay, np.uint8)
-        cv2.putText(imgRawGrade, str(int(score))+"%", (70,100), cv2.FONT_HERSHEY_COMPLEX, 3, (0,255,255), 3)
-        imgRawGrade = cv2.bitwise_not(imgRawGrade)
-        #cv2.imshow("Grade", imgRawGrade)
+        imgNotaCrus = np.zeros_like(imgGradeDisplay, np.uint8)
+        cv2.putText(imgNotaCrus, str(int(pontuacao)) + "%", (70, 100), cv2.FONT_HERSHEY_COMPLEX, 3, (0, 255, 255), 3)
+        imgNotaCrus = cv2.bitwise_not(imgNotaCrus)
+        # cv2.imshow("Grade", imgNotaCrus)
         invMatrixG = cv2.getPerspectiveTransform(ptG2, ptG1)
-        imgGradeDisplay = cv2.warpPerspective(imgRawGrade, invMatrixG, (widhtImg, heightImg))
-        
-        
+        imgGradeDisplay = cv2.warpPerspective(imgNotaCrus, invMatrixG, (larguraImg, alturaImg))
+
         imgFinal = cv2.addWeighted(imgInvWarp, 1, img, 1, 0)
         imgFinal = cv2.addWeighted(imgFinal, 1, imgGradeDisplay, 1, 0)
 
-    #Split the image
-    imgBlank = np.zeros_like(img)
-    imageArray = ([img, imgGray, imgBlur, imgCanny],
-                [imgContours, imgBiggestContours, imgWarpColored, imgResult],
-                [imgContours, imgBiggestContours, imgInvWarp, imgFinal])
-    labels = [["Original", "Gray", "Blur", "Canny"],
-            ["Contours", "Biggest Contour", "Warp", "Threshold"],
-            ["Result", "Biggest Contour", "Warp", "Final Result"]]
+    # Dividir a imagem
+    imgVazia = np.zeros_like(img)
+    imageArray = ([img, imgCinza, imgDesfoque, imgCanny],
+                   [imgContornos, imgMaioresContornos, imgWarpColorida, imgResultado],
+                   [imgContornos, imgMaioresContornos, imgInvWarp, imgFinal])
+    labels = [["Original", "Cinza", "Desfoque", "Canny"],
+              ["Contornos", "Maior Contorno", "Warp", "Limiar"],
+              ["Resultado", "Maior Contorno", "Warp", "Resultado Final"]]
 
-    imgStack = utis.stackImages(imageArray, 0.3,labels) 
+    imgEmpilhada = utils.stackImages(imageArray, 0.3, labels)
 
-    cv2.imshow("ImageStack", imgStack)
-    #cv2.imshow("Final", imgFinal)
+    cv2.imshow("Empilhamento de Imagens", imgEmpilhada)
+    # cv2.imshow("Final", imgFinal)
     cv2.waitKey(0)
     if cv2.waitKey(1) & 0xFF == ord('s'):
-        cv2.imwrite("FinalPaper.jpg", imgFinal)
+        cv2.imwrite("TrabalhoFinal.jpg", imgFinal)
         cv2.waitKey(300)
-        
