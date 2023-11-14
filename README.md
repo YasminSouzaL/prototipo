@@ -59,7 +59,7 @@ O sistema é projetado para processar imagens contendo folhas de respostas de qu
 ### Estrutura do Projeto
 
 - **`nome_do_script.py`**: O script principal que implementa o processo de OMR.
-- **`utils.py`**: Módulo contendo funções utilitárias, como a organização de pontos, detecção de contornos, entre outras.
+- **`utis.py`**: Módulo contendo funções utilitárias, como a organização de pontos, detecção de contornos, entre outras.
 - **`form.js`**: [REMOVIDO] Módulo não utilizado no projeto.
 
 ### Requisitos do Sistema

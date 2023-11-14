@@ -38,15 +38,15 @@ while True:
     cv2.drawContours(imgContornos, contornos, -1, (0, 255, 0), 10)
 
     # Encontrar Retângulo
-    retanguloContorno = utils.rectContour(contornos)
-    maiorContorno = utils.getCornerPoints(retanguloContorno[0])
-    pontosNota = utils.getCornerPoints(retanguloContorno[1])
+    retanguloContorno = utis.rectContour(contornos)
+    maiorContorno = utis.getCornerPoints(retanguloContorno[0])
+    pontosNota = utis.getCornerPoints(retanguloContorno[1])
 
     if maiorContorno.size != 0 and pontosNota.size != 0:
         cv2.drawContours(imgMaioresContornos, maiorContorno, -1, (0, 255, 0), 20)
         cv2.drawContours(imgMaioresContornos, pontosNota, -1, (255, 0, 0), 20)
-        maiorContorno = utils.reorder(maiorContorno)
-        pontosNota = utils.reorder(pontosNota)
+        maiorContorno = utis.reorder(maiorContorno)
+        pontosNota = utis.reorder(pontosNota)
 
         pt1 = np.float32(maiorContorno)
         pt2 = np.float32([[0, 0], [larguraImg, 0], [0, alturaImg], [larguraImg, alturaImg]])
@@ -63,7 +63,7 @@ while True:
         imgWarpCinza = cv2.cvtColor(imgWarpColorida, cv2.COLOR_BGR2GRAY)
         imgLimiar = cv2.threshold(imgWarpCinza, 170, 255, cv2.THRESH_BINARY_INV)[1]
 
-        caixas = utils.splitBoxes(imgLimiar)
+        caixas = utis.splitBoxes(imgLimiar)
         # cv2.imshow("Test", caixas[0])
 
         # Encontrar o número de cada caixa
@@ -101,9 +101,9 @@ while True:
 
         # Mostrar Respostas
         imgResultado = imgWarpColorida.copy()
-        imgResultado = utils.showAnswers(imgResultado, meuIndice, avaliacao, respostas_corretas, perguntas, opcoes)
+        imgResultado = utis.showAnswers(imgResultado, meuIndice, avaliacao, respostas_corretas, perguntas, opcoes)
         imgDesenhosCrus = np.zeros_like(imgWarpColorida)
-        imgDesenhosCrus = utils.showAnswers(imgDesenhosCrus, meuIndice, avaliacao, respostas_corretas, perguntas, opcoes)
+        imgDesenhosCrus = utis.showAnswers(imgDesenhosCrus, meuIndice, avaliacao, respostas_corretas, perguntas, opcoes)
         invMatrix = cv2.getPerspectiveTransform(pt2, pt1)
         imgInvWarp = cv2.warpPerspective(imgDesenhosCrus, invMatrix, (larguraImg, alturaImg))
 
@@ -126,7 +126,7 @@ while True:
               ["Contornos", "Maior Contorno", "Warp", "Limiar"],
               ["Resultado", "Maior Contorno", "Warp", "Resultado Final"]]
 
-    imgEmpilhada = utils.stackImages(imageArray, 0.3, labels)
+    imgEmpilhada = utis.stackImages(imageArray, 0.3, labels)
 
     cv2.imshow("Empilhamento de Imagens", imgEmpilhada)
     # cv2.imshow("Final", imgFinal)
